@@ -44,7 +44,7 @@ var app = {
     },
 
     pintaTablero: function() {
-        var letras = ["a","b","c","d","e","f","g","h"];
+        var letras = ["A","B","C","D","E","F","G","H"];
         var tabla = $('#table_ajedrez');
 
         for(var i=0;i<=8;i++){
