@@ -13,6 +13,9 @@ var app = {
         //this.receivedEvent('deviceready');
         var boton = $('#boton');
         boton.click(valor);
+
+        var logout = $('#logout');
+        logout.click(logoutUsuario);
     },
 
     // Update DOM on a Received Event
@@ -72,20 +75,40 @@ function valor(event){
     var password = $('#pass').val();
 
      $.ajax({
-        url:"https://ajedresss.herokuapp.com/api/login",
+        type: "POST",
+        url:"http://localhost:8080/api/login",
         dataType: 'json',
         data:{
             email: email,
             password: password
-        }
+        },
         success: function(data) {
-            alert("success");
-        } ,
-        error: function(data) { 
-            alert("fail");
-        }
+            if(data['mensaje'] == 1){
+                localStorage.setItem("idJugador1", data['idJugador1']);
+                localStorage.setItem("token", data['token']);
+                window.location = "http://localhost:8000/tablaJugadores.html";
+            }
+            else {
+               alert(data['mensaje']);
+            }
+        }        
     });
 
+}
+
+function logoutUsuario(event) {
+    var id = localStorage.getItem("idJugador1");
+    $.ajax({
+        type: "POST",
+        url:"http://localhost:8080/api/logout",
+        dataType: 'json',
+        data:{
+           id: id
+        },
+        success: function(data) {
+            alert(data['mensaje']);            
+        }        
+    });
 }
     
 

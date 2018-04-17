@@ -78,4 +78,27 @@ input:focus {
     float: right;
     width: calc(100% - 200px);
   }
-}
+
+  #tablejug{
+      border: 1px solid #c1c1c1;
+      height: 25px;
+      width:25px;     
+      display:inline-table; 
+      background-color:#f9f9f9;
+      padding: 15px;        
+  }
+  .cab{
+       border: 1px solid #c1c1c1; 
+      text-align:center; 
+      background-color:lightgrey; 
+      padding: 15px;                 
+  }
+  .fil{
+       border: 1px solid #c1c1c1; 
+      text-align:center;
+      background-color:#f9f9f9;   
+     padding: 15px;     
+  }
+  #logout{
+     background-color:lightgrey;       
+  }

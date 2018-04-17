@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>Ajedrez</title>
+    </head>
+    <body>
+        <div class="app">
+           <div id ="logout"><a>Logout</a></div>
+            <hr>
+            <h1 style="text-align:center">Elige un Jugador !</h1>
+             <div style="text-align:center;">  
+                <table id="tablejug">
+                    <thead>
+                      <tr>
+                        <th class="cab"></th>
+                        <th class="cab">id</th>
+                        <th class="cab" >Nombre</th>
+                        <th class="cab">email</th>             
+                      </tr>
+                    </thead>
+                    <tbody>                         
+                                              
+                    </tbody>
+                </table>                             
+             </div>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>
+
+<script>
+    $(document).ready(function () {   
+        var id = localStorage.getItem("idJugador1");         
+        $.ajax({
+            type: "POST",
+            url:"http://localhost:8080/api/eligeJugador",
+            dataType: 'json',
+            data:{
+               idJugador1: id
+            },
+            success: function (data) {
+                data['jugadores'].forEach(jugador => {
+                    crearFilaJugador(jugador);
+                });
+            }
+        });
+    });    
+   
+
+   function crearFilaJugador(jugador){
+        $('<tr>'+
+            '<td class="fil" ><input type="checkbox" name="jug" value="jug"></td>'+
+            '<td class="fil" >'+jugador['id']+'</td>'+
+            '<td class="fil">'+jugador['name']+'</td>'+
+            '<td class="fil">'+jugador['email']+'</td>'+
+        '</tr>').appendTo($("tbody"));
+        }
+</script>
