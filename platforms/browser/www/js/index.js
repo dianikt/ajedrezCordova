@@ -70,6 +70,8 @@ function movimiento(event){
     alert(event.target.id);
 }
 
+
+
 function valor(event){
     var email = $('#email').val();
     var password = $('#pass').val();
@@ -84,8 +86,8 @@ function valor(event){
         },
         success: function(data) {
             if(data['mensaje'] == 1){
-                localStorage.setItem("idJugador1", data['idJugador1']);
-                localStorage.setItem("token", data['token']);
+                localStorage.setItem("email", data['email']);
+                localStorage.setItem("token", data['token']);               
                 window.location = "http://localhost:8000/tablaJugadores.html";
             }
             else {
@@ -97,13 +99,15 @@ function valor(event){
 }
 
 function logoutUsuario(event) {
-    var id = localStorage.getItem("idJugador1");
+    var id = localStorage.getItem('email');
+    console.log(id);
+
     $.ajax({
         type: "POST",
         url:"http://localhost:8080/api/logout",
         dataType: 'json',
         data:{
-           id: id
+           email: localStorage.getItem('email'),
         },
         success: function(data) {
             alert(data['mensaje']);            
