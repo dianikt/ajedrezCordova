@@ -12,10 +12,19 @@ var app = {
     onDeviceReady: function() {
         //this.receivedEvent('deviceready');
         var boton = $('#boton');
-        boton.click(valor);
+        boton.click(login);
 
         var logout = $('#logout');
         logout.click(logoutUsuario);
+
+        var registro = $('#registro');
+        registro.click(registroUsuario);
+
+        var registrar = $('#registrarse');
+        registrar.click(registrarse);
+
+        var jugar = $("#jugar");
+        jugar.click(selectJugadorDos);
     },
 
     // Update DOM on a Received Event
@@ -72,7 +81,7 @@ function movimiento(event){
 
 
 
-function valor(event){
+function login(event){
     var email = $('#email').val();
     var password = $('#pass').val();
 
@@ -98,7 +107,7 @@ function valor(event){
 
 }
 
-function logoutUsuario(event) {
+function logoutUsuario() {
     var id = localStorage.getItem('email');
     console.log(id);
 
@@ -110,9 +119,43 @@ function logoutUsuario(event) {
            email: localStorage.getItem('email'),
         },
         success: function(data) {
-            alert(data['mensaje']);            
+            alert(data['mensaje']); 
+            window.location = "http://localhost:8000/index.html";       
         }        
     });
+}
+
+function registroUsuario(){
+    window.location = "http://localhost:8000/registro.html";
+} 
+
+function registrarse(){
+
+    var nombre = $('#name').val();
+    var email = $('#email').val();
+    var password = $('#pass').val();
+
+     $.ajax({
+        type: "POST",
+        url:"http://localhost:8080/api/registro",
+        dataType: 'json',
+        data:{
+            nombre:nombre,
+            email: email,
+            password: password
+        },
+        success: function(data) {
+            alert(data['mensaje']);
+            window.location = "http://localhost:8000/index.html"; 
+        }        
+    });
+
+}
+
+function selectJugadorDos(){
+
+    alert("hola");
+
 }
     
 

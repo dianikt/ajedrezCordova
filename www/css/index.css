@@ -102,3 +102,13 @@ input:focus {
   #logout{
      background-color:lightgrey;       
   }
+  
+  .form1{
+     background-color:lightgrey;       
+  }
+
+  #jugar{
+    border:1px solid black;
+    display: contents;
+    border-radius: 25px;
+  }
