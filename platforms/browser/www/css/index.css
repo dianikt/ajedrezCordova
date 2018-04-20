@@ -112,3 +112,10 @@ input:focus {
     display: contents;
     border-radius: 25px;
   }
+
+  #table_ajedrez td{
+      border:1px solid;
+      height:50px;
+      width:50px;
+
+  }

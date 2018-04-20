@@ -24,7 +24,7 @@ var app = {
         registrar.click(registrarse);
 
         var jugar = $("#jugar");
-        jugar.click(selectJugadorDos);
+        jugar.click(iniciaPartida);
     },
 
     // Update DOM on a Received Event
@@ -55,10 +55,10 @@ var app = {
                         tabla.append("<tr></tr>");
                     }else{
                         if((i%2 == 0 && j%2 == 0)||(i%2 != 0 && j%2 != 0)){
-                            var fila = $("<td id="+i+j+" style='background-color:black'></td>");
+                            var fila = $("<td id="+i+j+" style='background-color:black;'></td>");
                            
                          }else{                            
-                            var fila = $("<td id="+i+j+" style='background-color:white'></td>");                           
+                            var fila = $("<td id="+i+j+" style='background-color:white;'></td>");                           
                         }
                     fila.click(movimiento);
                     tabla.append(fila);
@@ -73,13 +73,46 @@ var app = {
 
 app.initialize();
 app.pintaTablero();
-
+var actEstado = 1;
 
 function movimiento(event){
-    alert(event.target.id);
+    //$( "div" ).click(function() {
+    //var color = $( this ).css( "background-color" );
+
+    $.ajax({
+        type: "POST",
+        url:"http://localhost:8080/api/movimiento",
+        dataType: 'json',
+        data:{
+            posNueva: (event.target.id),
+            idFicha1: localStorage.getItem('idFicha1'),
+            idFicha2: localStorage.getItem('idFicha2'),
+            estado: localStorage.getItem('estado'),
+            idPartida:localStorage.getItem('idPartida')
+        },
+        success: function(data) {
+          
+            //comprobar movimiento.....
+            actEstado = JSON.parse(localStorage.getItem('estado'));
+            if(actEstado%2 == 0){
+                var pos1 = event.target.id;
+                $('#'+pos1).css("background-color", "" );
+                $('#'+pos1).css("background-image", "url('img/blanca.png')");
+                $('#'+pos1).css("background-size", "cover");
+            }else{
+                var pos2 = localStorage.getItem('pos2');               
+                $('#'+pos2).css("background-color", "" );
+                $('#'+pos2).css("background-image", "url('img/negra.png')");
+                $('#'+pos2).css("background-size", "cover");
+            }
+
+            actEstado = actEstado+1;
+            localStorage.setItem('estado', actEstado);
+            alert(actEstado);
+
+        },        
+    });  
 }
-
-
 
 function login(event){
     var email = $('#email').val();
@@ -96,7 +129,9 @@ function login(event){
         success: function(data) {
             if(data['mensaje'] == 1){
                 localStorage.setItem("email", data['email']);
-                localStorage.setItem("token", data['token']);               
+                localStorage.setItem("token", data['token']);
+                localStorage.setItem("idJugador1", data['idJugador1']);               
+               
                 window.location = "http://localhost:8000/tablaJugadores.html";
             }
             else {
@@ -152,9 +187,35 @@ function registrarse(){
 
 }
 
-function selectJugadorDos(){
+function iniciaPartida(){
+    var idJugador2 = $('input[name=jug]:checked').val();
+    localStorage.setItem('id', idJugador2);
 
-    alert("hola");
+    $.ajax({
+        type: "POST",
+        url:"http://localhost:8080/api/initPartida",
+        dataType: 'json',
+        data:{
+            idJugador1:localStorage.getItem('idJugador1'),
+            token:localStorage.getItem('token'),
+            idJugador2:idJugador2,           
+        },
+        success: function(data) {
+            localStorage.setItem("idFicha1", data['ficha1'][0]['idFicha'] );
+            localStorage.setItem("idFicha2", data['ficha2'][0]['idFicha'] );
+            localStorage.setItem("pos1", data['ficha1'][0]['pos'] );
+            localStorage.setItem("pos2", data['ficha2'][0]['pos'] );
+            localStorage.setItem("idPartida", data['ficha1'][0]['idPartida'] );     
+            localStorage.setItem("estado", data['estado']);
+
+            window.location = "http://localhost:8000/tablero.html"; 
+        },
+        error: function (data) {
+            alert(data['mensaje']);
+           
+        }        
+    });
+
 
 }
     

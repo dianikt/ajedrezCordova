@@ -48,7 +48,7 @@
             },
             success: function (data) {
                 data['jugadores'].forEach(jugador => {
-                    crearFilaJugador(jugador);
+                    crearFilaJugador(jugador);                    
                 });
             }
         });
@@ -57,12 +57,13 @@
 
    function crearFilaJugador(jugador){
         $('<tr>'+
-            '<td class="fil" ><input type="checkbox" class="jug" value="'+jugador['id']+'"></td>'+
+            '<td class="fil" ><input type="radio" name="jug" value="'+jugador['id']+'"></td>'+
             '<td class="fil" >'+jugador['id']+'</td>'+
             '<td class="fil">'+jugador['name']+'</td>'+
             '<td class="fil">'+jugador['email']+'</td>'+
         '</tr>').appendTo($("tbody"));
-        }
+    }
+   
    
   
 </script>
