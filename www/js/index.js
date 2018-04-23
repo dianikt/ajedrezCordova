@@ -93,22 +93,26 @@ function movimiento(event){
         success: function(data) {
           
             //comprobar movimiento.....
+            var posAnt = localStorage.getItem('pos1');              
             actEstado = JSON.parse(localStorage.getItem('estado'));
+
             if(actEstado%2 == 0){
-                var pos1 = event.target.id;
-                $('#'+pos1).css("background-color", "" );
+                 $('#'+posAnt).css("background-image", "");
+                var pos1 = event.target.id;               
                 $('#'+pos1).css("background-image", "url('img/blanca.png')");
                 $('#'+pos1).css("background-size", "cover");
+                localStorage.setItem('pos1', pos1);
             }else{
-                var pos2 = localStorage.getItem('pos2');               
-                $('#'+pos2).css("background-color", "" );
+                alert("NO es tu turno!!");
+               /* var pos2 = localStorage.getItem('pos2');               
                 $('#'+pos2).css("background-image", "url('img/negra.png')");
                 $('#'+pos2).css("background-size", "cover");
+                localStorage.setItem('pos2', pos2);*/
             }
 
             actEstado = actEstado+1;
             localStorage.setItem('estado', actEstado);
-            alert(actEstado);
+            //alert(actEstado);
 
         },        
     });  

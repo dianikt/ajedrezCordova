@@ -47,15 +47,34 @@
                idJugador1: id
             },
             success: function (data) {
-                data['jugadores'].forEach(jugador => {
-                    crearFilaJugador(jugador);                    
-                });
+                if(data['jugadores'].length == 0){
+                    recargaJugadores(id);
+                }else{
+                    data['jugadores'].forEach(jugador => {
+                    crearFilaJugador(jugador);                                       
+                    });
+                }
             }
         });
-    });    
-   
+    });  
 
-   function crearFilaJugador(jugador){
+    function recargaJugadores(id) {
+        setInterval(function(){
+             $.ajax({
+            type: "POST",
+            url:"http://localhost:8080/api/eligeJugador",
+            dataType: 'json',
+            data:{
+               idJugador1: id
+            },
+            success: function (data) {               
+            }
+        });
+        }, 2000);
+
+    }
+
+    function crearFilaJugador(jugador){
         $('<tr>'+
             '<td class="fil" ><input type="radio" name="jug" value="'+jugador['id']+'"></td>'+
             '<td class="fil" >'+jugador['id']+'</td>'+
