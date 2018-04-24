@@ -37,8 +37,17 @@
 </html>
 
 <script>
-    $(document).ready(function () {   
-        var id = localStorage.getItem("idJugador1");         
+
+var partidas = 0;
+
+$(document).ready(function () { 
+
+    var id = localStorage.getItem("idJugador1");  
+    partidas = comprobarPartidas();
+      alert(partidas);
+    if(partidas == 1){
+        window.location = "http://localhost:8000/tablero.html"; 
+    }else{       
         $.ajax({
             type: "POST",
             url:"http://localhost:8080/api/eligeJugador",
@@ -56,32 +65,70 @@
                 }
             }
         });
-    });  
+    }
+});  
 
-    function recargaJugadores(id) {
-        setInterval(function(){
-             $.ajax({
-            type: "POST",
-            url:"http://localhost:8080/api/eligeJugador",
-            dataType: 'json',
-            data:{
-               idJugador1: id
-            },
-            success: function (data) {               
+function recargaJugadores(id) {
+    setInterval(function(){
+         $.ajax({
+        type: "POST",
+        url:"http://localhost:8080/api/eligeJugador",
+        dataType: 'json',
+        data:{
+           idJugador1: id
+        },
+        success: function (data) { 
+           if(data['jugadores'].length > 0){     
+                window.location = "http://localhost:8000/tablero.html"; 
+           }       
+        }
+    });
+    }, 2000);
+
+}
+
+function crearFilaJugador(jugador){
+    $('<tr>'+
+        '<td class="fil" ><input type="radio" name="jug" value="'+jugador['id']+'"></td>'+
+        '<td class="fil" >'+jugador['id']+'</td>'+
+        '<td class="fil">'+jugador['name']+'</td>'+
+        '<td class="fil">'+jugador['email']+'</td>'+
+    '</tr>').appendTo($("tbody"));
+}
+
+
+function comprobarPartidas(){
+    var idJugador1 = localStorage.getItem('idJugador1');  
+   
+    $.ajax({
+        type: "POST",
+        url:"http://localhost:8080/api/comprobarPartidas",
+        dataType: 'json',
+        data:{
+            idJugador1:idJugador1,           
+        },
+        success: function(data) {           
+            if(data['partidas']['idPartida'] > 0){
+                partidas = 1;  
+                localStorage.setItem("idFicha1", data['fichas'][0]['idFicha'] );
+                localStorage.setItem("idFicha2", data['fichas'][1]['idFicha'] );
+                localStorage.setItem("pos1", data['fichas'][0]['pos'] );
+                localStorage.setItem("pos2", data['fichas'][1]['pos'] );
+                localStorage.setItem("idPartida", data['partidas']['idPartida'] );     
+                localStorage.setItem("estado", data['partidas']['estados']);                      
             }
-        });
-        }, 2000);
+        },
+        error: function (data) {          
+           
+        }        
+    });
+   
+    return partidas;
+}
+    
+function partidaActual(idPartida){
 
-    }
-
-    function crearFilaJugador(jugador){
-        $('<tr>'+
-            '<td class="fil" ><input type="radio" name="jug" value="'+jugador['id']+'"></td>'+
-            '<td class="fil" >'+jugador['id']+'</td>'+
-            '<td class="fil">'+jugador['name']+'</td>'+
-            '<td class="fil">'+jugador['email']+'</td>'+
-        '</tr>').appendTo($("tbody"));
-    }
+}
    
    
   

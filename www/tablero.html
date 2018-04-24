@@ -6,6 +6,8 @@
     </head>
     <body>
         <div class="app">
+            <div id ="logout"><a>Logout</a></div>
+            <hr>
             <h1 style="text-align:center">Juguemos al AJEDREZ ! </h1>
             <div style="text-align:center">  
                 <table style="display:inline-block;" id="table_ajedrez">
@@ -23,14 +25,11 @@
         <script>
             $(document).ready(function () {   
                 var pos1 = localStorage.getItem('pos1');
-                var pos2 = localStorage.getItem('pos2');
+                var pos2 = localStorage.getItem('pos2');               
                
-                //$('#'+pos1).css("background-color", "" );
                 $('#'+pos1).css("background-image", "url('img/blanca.png')");
-                $('#'+pos1).css("background-size", "cover");
-
-                
-                //$('#'+pos2).css("background-color", "" );
+                $('#'+pos1).css("background-size", "cover");                
+               
                 $('#'+pos2).css("background-image", "url('img/negra.png')");
                 $('#'+pos2).css("background-size", "cover");
            });

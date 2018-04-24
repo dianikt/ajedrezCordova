@@ -110,6 +110,17 @@ function movimiento(event){
                 localStorage.setItem('pos2', pos2);*/
             }
 
+            /*if(actEstado%2 != 0){
+                 $('#'+posAnt).css("background-image", "");
+                var pos2 = localStorage.getItem('pos2');               
+                $('#'+pos2).css("background-image", "url('img/negra.png')");
+                $('#'+pos2).css("background-size", "cover");
+                localStorage.setItem('pos2', pos2);
+            }else{
+                alert("NO es tu turno!!");              
+            }*/
+
+
             actEstado = actEstado+1;
             localStorage.setItem('estado', actEstado);
             //alert(actEstado);
@@ -147,8 +158,7 @@ function login(event){
 }
 
 function logoutUsuario() {
-    var id = localStorage.getItem('email');
-    console.log(id);
+    var id = localStorage.getItem('email');   
 
     $.ajax({
         type: "POST",
@@ -193,8 +203,7 @@ function registrarse(){
 
 function iniciaPartida(){
     var idJugador2 = $('input[name=jug]:checked').val();
-    localStorage.setItem('id', idJugador2);
-
+    localStorage.setItem('id', idJugador2);    
     $.ajax({
         type: "POST",
         url:"http://localhost:8080/api/initPartida",
@@ -218,10 +227,8 @@ function iniciaPartida(){
             alert(data['mensaje']);
            
         }        
-    });
-
-
+    });    
 }
-    
+
 
 
