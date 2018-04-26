@@ -9,6 +9,7 @@
            <div id ="logout"><a>Logout</a></div>
             <hr>
             <h1 style="text-align:center">Elige un Jugador !</h1>
+             <form class="form1">  
              <div style="text-align:center;">  
                 <table id="tablejug">
                     <thead>
@@ -22,10 +23,24 @@
                     <tbody>                         
                                               
                     </tbody>
-                </table>                              
+                </table>
+
+                <table id="tablepartida">
+                    <thead>
+                      <tr>
+                        <th class="cab"></th>
+                        <th class="cab">idPartida</th>
+                        <th class="cab" >id Jugadores</th>
+                        <th class="cab">Estado</th>             
+                      </tr>
+                    </thead>
+                    <tbody>                         
+                                              
+                    </tbody>
+                </table>                                  
             </div>                       
         </div>
-        <form class="form1">                    
+                         
                  <div class="button" style="text-align:center;">
                     <button id="jugar" type="button">Comienza la partida !!</button>
                  </div>                   
@@ -43,11 +58,9 @@ var partidas = 0;
 $(document).ready(function () { 
 
     var id = localStorage.getItem("idJugador1");  
-    partidas = comprobarPartidas();
-      alert(partidas);
-    if(partidas == 1){
-        window.location = "http://localhost:8000/tablero.html"; 
-    }else{       
+    partidas = comprobarPartidas();    
+   
+    if(localStorage.getItem('partidas') == 0){               
         $.ajax({
             type: "POST",
             url:"http://localhost:8080/api/eligeJugador",
@@ -57,15 +70,15 @@ $(document).ready(function () {
             },
             success: function (data) {
                 if(data['jugadores'].length == 0){
-                    recargaJugadores(id);
+                    recargaJugadores(id);                   
                 }else{
                     data['jugadores'].forEach(jugador => {
                     crearFilaJugador(jugador);                                       
                     });
                 }
             }
-        });
-    }
+        }); 
+    }   
 });  
 
 function recargaJugadores(id) {
@@ -93,14 +106,13 @@ function crearFilaJugador(jugador){
         '<td class="fil" >'+jugador['id']+'</td>'+
         '<td class="fil">'+jugador['name']+'</td>'+
         '<td class="fil">'+jugador['email']+'</td>'+
-    '</tr>').appendTo($("tbody"));
+    '</tr>').appendTo($("#tablejug"));
 }
 
 
 function comprobarPartidas(){
     var idJugador1 = localStorage.getItem('idJugador1');  
-   
-    $.ajax({
+     $.ajax({
         type: "POST",
         url:"http://localhost:8080/api/comprobarPartidas",
         dataType: 'json',
@@ -108,28 +120,25 @@ function comprobarPartidas(){
             idJugador1:idJugador1,           
         },
         success: function(data) {           
-            if(data['partidas']['idPartida'] > 0){
-                partidas = 1;  
-                localStorage.setItem("idFicha1", data['fichas'][0]['idFicha'] );
-                localStorage.setItem("idFicha2", data['fichas'][1]['idFicha'] );
-                localStorage.setItem("pos1", data['fichas'][0]['pos'] );
-                localStorage.setItem("pos2", data['fichas'][1]['pos'] );
-                localStorage.setItem("idPartida", data['partidas']['idPartida'] );     
-                localStorage.setItem("estado", data['partidas']['estados']);                      
+            if(data['partidas'].length > 0){  
+                partidas = 1; 
+                data['partidas'].forEach(parti => {
+                     crearFilaPartidaPendiente(parti);                                   
+                });                    
             }
-        },
-        error: function (data) {          
-           
-        }        
+        },               
     });
    
     return partidas;
-}
-    
-function partidaActual(idPartida){
+} 
 
+function crearFilaPartidaPendiente(parti){
+    $('<tr>'+
+        '<td class="fil" ><input type="radio" name="part" value="'+parti['idPartida']+'"></td>'+
+        '<td class="fil" >'+parti['idPartida']+'</td>'+
+        '<td class="fil">'+parti['jugador1']+parti['jugador2']+'</td>'+
+        '<td class="fil">'+parti['estados']+'</td>'+
+    '</tr>').appendTo($("#tablepartida"));
 }
-   
-   
   
 </script>

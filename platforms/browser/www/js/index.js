@@ -3,6 +3,7 @@ var app = {
     // Application Constructor
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+
     },
 
     // deviceready Event Handler
@@ -25,6 +26,9 @@ var app = {
 
         var jugar = $("#jugar");
         jugar.click(iniciaPartida);
+
+         var final = $("#finalizar");
+        final.click(finalizarPartida);
     },
 
     // Update DOM on a Received Event
@@ -40,6 +44,9 @@ var app = {
     },
 
     pintaTablero: function() {
+
+        //recargaTablero();
+
         var letras = ["A","B","C","D","E","F","G","H"];
         var tabla = $('#table_ajedrez');
 
@@ -73,11 +80,13 @@ var app = {
 
 app.initialize();
 app.pintaTablero();
+comienza();
 var actEstado = 1;
 
 function movimiento(event){
     //$( "div" ).click(function() {
     //var color = $( this ).css( "background-color" );
+   
 
     $.ajax({
         type: "POST",
@@ -93,33 +102,29 @@ function movimiento(event){
         success: function(data) {
           
             //comprobar movimiento.....
-            var posAnt = localStorage.getItem('pos1');              
+                         
             actEstado = JSON.parse(localStorage.getItem('estado'));
+            var turno = data['estado'];
 
-            if(actEstado%2 == 0){
-                 $('#'+posAnt).css("background-image", "");
-                var pos1 = event.target.id;               
-                $('#'+pos1).css("background-image", "url('img/blanca.png')");
-                $('#'+pos1).css("background-size", "cover");
-                localStorage.setItem('pos1', pos1);
-            }else{
-                alert("NO es tu turno!!");
-               /* var pos2 = localStorage.getItem('pos2');               
-                $('#'+pos2).css("background-image", "url('img/negra.png')");
-                $('#'+pos2).css("background-size", "cover");
-                localStorage.setItem('pos2', pos2);*/
-            }
+            var idJugador1 = localStorage.getItem('idJugador1');
+            var idJugador2 = localStorage.getItem('idJugador2');
 
-            /*if(actEstado%2 != 0){
-                 $('#'+posAnt).css("background-image", "");
+            var posAnt = localStorage.getItem('pos1'); 
+            $('#'+posAnt).css("background-image", "");
+            var pos1 = event.target.id;               
+            $('#'+pos1).css("background-image", "url('img/blanca.png')");
+            $('#'+pos1).css("background-size", "cover");
+            localStorage.setItem('pos1', pos1);
+      
+            if(localStorage.getItem('partidas') == 1){
+                var posAnt = localStorage.getItem('pos2'); 
+                $('#'+posAnt).css("background-image", "");              
+
                 var pos2 = localStorage.getItem('pos2');               
                 $('#'+pos2).css("background-image", "url('img/negra.png')");
                 $('#'+pos2).css("background-size", "cover");
                 localStorage.setItem('pos2', pos2);
-            }else{
-                alert("NO es tu turno!!");              
-            }*/
-
+            }   
 
             actEstado = actEstado+1;
             localStorage.setItem('estado', actEstado);
@@ -169,6 +174,17 @@ function logoutUsuario() {
         },
         success: function(data) {
             alert(data['mensaje']); 
+            localStorage.setItem("email", '');
+            localStorage.setItem("token", '');
+            localStorage.setItem("idJugador1", '');
+            localStorage.setItem("idJugador2", '');
+            localStorage.setItem("idFicha1", '' );
+            localStorage.setItem("idFicha2", '' );
+            localStorage.setItem("pos1",'' );
+            localStorage.setItem("pos2", '' );
+            localStorage.setItem("idPartida", '' );     
+            localStorage.setItem("estado", '');
+            localStorage.setItem("partidas", '');
             window.location = "http://localhost:8000/index.html";       
         }        
     });
@@ -202,6 +218,50 @@ function registrarse(){
 }
 
 function iniciaPartida(){
+
+    if($('input[name=part]').is(":checked")){  
+        var  part =  $('input[name=part]:checked').val();
+        initPartidaAntigua(part);
+    }
+     if($('input[name=jug]').is(":checked")){  
+        var jug  = $('input[name=jug]:checked').val();
+        iniciarJugador(jug);
+    }
+       
+            
+       
+
+}
+
+function iniciarJugador(idJugador2){
+    localStorage.setItem('id', idJugador2);    
+    $.ajax({
+        type: "POST",
+        url:"http://localhost:8080/api/initPartida",
+        dataType: 'json',
+        data:{
+            idJugador1:localStorage.getItem('idJugador1'),
+            token:localStorage.getItem('token'),
+            idJugador2:idJugador2,           
+        },
+        success: function(data) {
+            localStorage.setItem("idFicha1", data['ficha1'][0]['idFicha'] );
+            localStorage.setItem("idFicha2", data['ficha2'][0]['idFicha'] );
+            localStorage.setItem("pos1", data['ficha1'][0]['pos'] );
+            localStorage.setItem("pos2", data['ficha2'][0]['pos'] );
+            localStorage.setItem("idPartida", data['ficha1'][0]['idPartida'] );     
+            localStorage.setItem("estado", data['estado']);
+
+            window.location = "http://localhost:8000/tablero.html"; 
+        },
+        error: function (data) {
+            alert(data['mensaje']);
+           
+        }        
+    });    
+}
+
+function initPartidaAntigua(){
     var idJugador2 = $('input[name=jug]:checked').val();
     localStorage.setItem('id', idJugador2);    
     $.ajax({
@@ -230,5 +290,56 @@ function iniciaPartida(){
     });    
 }
 
+function finalizarPartida(){
+   
+    $.ajax({
+        type: "POST",
+        url:"http://localhost:8080/api/finalizar",
+        dataType: 'json',
+        data:{
+            idJugador1:localStorage.getItem('idJugador1'),
+            idJugador2:localStorage.getItem('idJugador2'),
+            idPartida:localStorage.getItem('idPartida'),      
+        },
+        success: function(data) {
+            localStorage.setItem("email", '');
+            localStorage.setItem("token", '');
+            localStorage.setItem("idJugador1", '');
+            localStorage.setItem("idJugador2", '');
+            localStorage.setItem("idFicha1", '' );
+            localStorage.setItem("idFicha2", '' );
+            localStorage.setItem("pos1",'' );
+            localStorage.setItem("pos2", '' );
+            localStorage.setItem("idPartida", '' );     
+            localStorage.setItem("estado", '');
+            localStorage.setItem("partidas", '');
+            window.location = "http://localhost:8000/index.html"; 
+        },
+        error: function (data) {
+        }        
+    });    
 
 
+}
+
+function recargaTablero(){
+    
+    setInterval(function(){
+        $.ajax({
+            type: "POST",
+            url:"http://localhost:8080/api/recargaTablero",
+            dataType: 'json',
+            data:{
+                 idFicha1:localStorage.getItem('idFicha1'),
+                 idFicha2:localStorage.getItem('idFicha2'),
+                 pos1:localStorage.getItem('pos1'),
+                 pos2:localStorage.getItem('pos2'),
+            },
+            success: function (data) {               
+              // localStorage.setItem("pos1", data['ficha1']['pos'] );
+               //localStorage.setItem("pos2", data['ficha2']['pos'] ); 
+          },     
+        });
+    }, 2000);
+
+}
