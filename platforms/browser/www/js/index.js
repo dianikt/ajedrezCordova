@@ -3,7 +3,6 @@ var app = {
     // Application Constructor
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
-
     },
 
     // deviceready Event Handler
@@ -29,6 +28,7 @@ var app = {
 
          var final = $("#finalizar");
         final.click(finalizarPartida);
+        
     },
 
     // Update DOM on a Received Event
@@ -80,58 +80,66 @@ var app = {
 
 app.initialize();
 app.pintaTablero();
-comienza();
+
+
 var actEstado = 1;
 
 function movimiento(event){
     //$( "div" ).click(function() {
     //var color = $( this ).css( "background-color" );
-   
+    var pos1 =  localStorage.getItem('pos1');
+    var pos2 =  localStorage.getItem('pos2');
 
-    $.ajax({
-        type: "POST",
-        url:"http://localhost:8080/api/movimiento",
-        dataType: 'json',
-        data:{
-            posNueva: (event.target.id),
-            idFicha1: localStorage.getItem('idFicha1'),
-            idFicha2: localStorage.getItem('idFicha2'),
-            estado: localStorage.getItem('estado'),
-            idPartida:localStorage.getItem('idPartida')
-        },
-        success: function(data) {
+    if(pos1 == pos2)
+    { 
+        alert("!! HAS GANADO !!");
+        finalizarPartida();
+    }else{
+        $.ajax({
+            type: "POST",
+            url:"https://vast-brook-31764.herokuapp.com/api/movimiento",
+            dataType: 'json',
+            data:{
+                posNueva: (event.target.id),
+                idFicha1: localStorage.getItem('idFicha1'),
+                idFicha2: localStorage.getItem('idFicha2'),
+                estado: localStorage.getItem('estado'),
+                idPartida:localStorage.getItem('idPartida')
+            },
+            success: function(data) {
+              
+                //comprobar movimiento.....
+                             
+                actEstado = JSON.parse(localStorage.getItem('estado'));
+                var turno = data['estado'];
+
+                var idJugador1 = localStorage.getItem('idJugador1');
+                var idJugador2 = localStorage.getItem('idJugador2');
+
+                var posAnt = localStorage.getItem('pos1'); 
+                $('#'+posAnt).css("background-image", "");
+                var pos1 = event.target.id;               
+                $('#'+pos1).css("background-image", "url('img/blanca.png')");
+                $('#'+pos1).css("background-size", "cover");
+                localStorage.setItem('pos1', pos1);
           
-            //comprobar movimiento.....
-                         
-            actEstado = JSON.parse(localStorage.getItem('estado'));
-            var turno = data['estado'];
+                if(localStorage.getItem('partidas') == 1){
+                    var posAnt = localStorage.getItem('pos2'); 
+                    $('#'+posAnt).css("background-image", "");              
 
-            var idJugador1 = localStorage.getItem('idJugador1');
-            var idJugador2 = localStorage.getItem('idJugador2');
+                    var pos2 = localStorage.getItem('pos2');               
+                    $('#'+pos2).css("background-image", "url('img/negra.png')");
+                    $('#'+pos2).css("background-size", "cover");
+                    localStorage.setItem('pos2', pos2);
+                }   
 
-            var posAnt = localStorage.getItem('pos1'); 
-            $('#'+posAnt).css("background-image", "");
-            var pos1 = event.target.id;               
-            $('#'+pos1).css("background-image", "url('img/blanca.png')");
-            $('#'+pos1).css("background-size", "cover");
-            localStorage.setItem('pos1', pos1);
-      
-            if(localStorage.getItem('partidas') == 1){
-                var posAnt = localStorage.getItem('pos2'); 
-                $('#'+posAnt).css("background-image", "");              
+                actEstado = actEstado+1;
+                localStorage.setItem('estado', actEstado);
+                //alert(actEstado);
 
-                var pos2 = localStorage.getItem('pos2');               
-                $('#'+pos2).css("background-image", "url('img/negra.png')");
-                $('#'+pos2).css("background-size", "cover");
-                localStorage.setItem('pos2', pos2);
-            }   
-
-            actEstado = actEstado+1;
-            localStorage.setItem('estado', actEstado);
-            //alert(actEstado);
-
-        },        
-    });  
+            },        
+        });  
+    }
 }
 
 function login(event){
@@ -140,7 +148,7 @@ function login(event){
 
      $.ajax({
         type: "POST",
-        url:"http://localhost:8080/api/login",
+        url:"https://vast-brook-31764.herokuapp.com/api/login",
         dataType: 'json',
         data:{
             email: email,
@@ -150,9 +158,9 @@ function login(event){
             if(data['mensaje'] == 1){
                 localStorage.setItem("email", data['email']);
                 localStorage.setItem("token", data['token']);
-                localStorage.setItem("idJugador1", data['idJugador1']);               
+                localStorage.setItem("idJugador1", data['idJugador1']);          
                
-                window.location = "http://localhost:8000/tablaJugadores.html";
+                window.location = "tablaJugadores.html";
             }
             else {
                alert(data['mensaje']);
@@ -167,7 +175,7 @@ function logoutUsuario() {
 
     $.ajax({
         type: "POST",
-        url:"http://localhost:8080/api/logout",
+        url:"https://vast-brook-31764.herokuapp.com/api/logout",
         dataType: 'json',
         data:{
            email: localStorage.getItem('email'),
@@ -185,13 +193,13 @@ function logoutUsuario() {
             localStorage.setItem("idPartida", '' );     
             localStorage.setItem("estado", '');
             localStorage.setItem("partidas", '');
-            window.location = "http://localhost:8000/index.html";       
+            window.location = "index.html";       
         }        
     });
 }
 
 function registroUsuario(){
-    window.location = "http://localhost:8000/registro.html";
+    window.location = "registro.html";
 } 
 
 function registrarse(){
@@ -202,7 +210,7 @@ function registrarse(){
 
      $.ajax({
         type: "POST",
-        url:"http://localhost:8080/api/registro",
+        url:"https://vast-brook-31764.herokuapp.com/api/registro",
         dataType: 'json',
         data:{
             nombre:nombre,
@@ -211,7 +219,7 @@ function registrarse(){
         },
         success: function(data) {
             alert(data['mensaje']);
-            window.location = "http://localhost:8000/index.html"; 
+            window.location = "index.html"; 
         }        
     });
 
@@ -219,25 +227,16 @@ function registrarse(){
 
 function iniciaPartida(){
 
-    if($('input[name=part]').is(":checked")){  
+    /*if($('input[name=part]').is(":checked")){  
         var  part =  $('input[name=part]:checked').val();
         initPartidaAntigua(part);
-    }
-     if($('input[name=jug]').is(":checked")){  
-        var jug  = $('input[name=jug]:checked').val();
-        iniciarJugador(jug);
-    }
-       
-            
-       
-
-}
-
-function iniciarJugador(idJugador2){
+    }*/
+     
+    var idJugador2  = ($('input:radio[name=jug]:checked').val());   
     localStorage.setItem('id', idJugador2);    
     $.ajax({
         type: "POST",
-        url:"http://localhost:8080/api/initPartida",
+        url:"https://vast-brook-31764.herokuapp.com/api/initPartida",
         dataType: 'json',
         data:{
             idJugador1:localStorage.getItem('idJugador1'),
@@ -252,7 +251,7 @@ function iniciarJugador(idJugador2){
             localStorage.setItem("idPartida", data['ficha1'][0]['idPartida'] );     
             localStorage.setItem("estado", data['estado']);
 
-            window.location = "http://localhost:8000/tablero.html"; 
+            window.location = "tablero.html"; 
         },
         error: function (data) {
             alert(data['mensaje']);
@@ -262,11 +261,11 @@ function iniciarJugador(idJugador2){
 }
 
 function initPartidaAntigua(){
-    var idJugador2 = $('input[name=jug]:checked').val();
+    var idJugador2 = $('input[name=part]:checked').val();
     localStorage.setItem('id', idJugador2);    
     $.ajax({
         type: "POST",
-        url:"http://localhost:8080/api/initPartida",
+        url:"https://vast-brook-31764.herokuapp.com/api/initPartida",
         dataType: 'json',
         data:{
             idJugador1:localStorage.getItem('idJugador1'),
@@ -281,7 +280,7 @@ function initPartidaAntigua(){
             localStorage.setItem("idPartida", data['ficha1'][0]['idPartida'] );     
             localStorage.setItem("estado", data['estado']);
 
-            window.location = "http://localhost:8000/tablero.html"; 
+            window.location = "tablero.html"; 
         },
         error: function (data) {
             alert(data['mensaje']);
@@ -294,7 +293,7 @@ function finalizarPartida(){
    
     $.ajax({
         type: "POST",
-        url:"http://localhost:8080/api/finalizar",
+        url:"https://vast-brook-31764.herokuapp.com/api/finalizar",
         dataType: 'json',
         data:{
             idJugador1:localStorage.getItem('idJugador1'),
@@ -313,7 +312,7 @@ function finalizarPartida(){
             localStorage.setItem("idPartida", '' );     
             localStorage.setItem("estado", '');
             localStorage.setItem("partidas", '');
-            window.location = "http://localhost:8000/index.html"; 
+            window.location = "index.html"; 
         },
         error: function (data) {
         }        
@@ -327,7 +326,7 @@ function recargaTablero(){
     setInterval(function(){
         $.ajax({
             type: "POST",
-            url:"http://localhost:8080/api/recargaTablero",
+            url:"https://vast-brook-31764.herokuapp.com/api/recargaTablero",
             dataType: 'json',
             data:{
                  idFicha1:localStorage.getItem('idFicha1'),

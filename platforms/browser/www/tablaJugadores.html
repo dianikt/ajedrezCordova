@@ -55,15 +55,15 @@
 
 var partidas = 0;
 
-$(document).ready(function () { 
+$( document ).ready(function() {
 
     var id = localStorage.getItem("idJugador1");  
     partidas = comprobarPartidas();    
    
-    if(localStorage.getItem('partidas') == 0){               
+               
         $.ajax({
             type: "POST",
-            url:"http://localhost:8080/api/eligeJugador",
+            url:"https://vast-brook-31764.herokuapp.com/api/eligeJugador",
             dataType: 'json',
             data:{
                idJugador1: id
@@ -78,21 +78,22 @@ $(document).ready(function () {
                 }
             }
         }); 
-    }   
+       
 });  
 
 function recargaJugadores(id) {
+
     setInterval(function(){
          $.ajax({
         type: "POST",
-        url:"http://localhost:8080/api/eligeJugador",
+        url:"https://vast-brook-31764.herokuapp.com/api/eligeJugador",
         dataType: 'json',
         data:{
            idJugador1: id
         },
         success: function (data) { 
            if(data['jugadores'].length > 0){     
-                window.location = "http://localhost:8000/tablero.html"; 
+                window.location = "tablero.html"; 
            }       
         }
     });
@@ -114,7 +115,7 @@ function comprobarPartidas(){
     var idJugador1 = localStorage.getItem('idJugador1');  
      $.ajax({
         type: "POST",
-        url:"http://localhost:8080/api/comprobarPartidas",
+        url:"https://vast-brook-31764.herokuapp.com/api/comprobarPartidas",
         dataType: 'json',
         data:{
             idJugador1:idJugador1,           
